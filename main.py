@@ -1,16 +1,31 @@
-# This is a sample Python script.
+from transformer.asteroids_transformer import AsteroidsTransformer
+from client.storage_client import GCSClient
+from utils.logger import logger
+from utils.settings import settings
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def main(request):
+    request_json = request.get_json(silent=True)
+    file_path = request_json.get("file_path")
 
+    if not file_path:
+        return {"error": "file_path is required"}, 400
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+    try:
+        gcs = GCSClient()
+        raw_data = gcs.download(file_path)
 
+        transformer = AsteroidsTransformer()
+        df = transformer.transform_asteroids_data(raw_data)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+        output_path = settings.OUTPUT_PATH
+        if not output_path:
+            logger.info("There is no path")
+            return {"error": "filepath does not exist"}
+        logger.info("Uploading transform data to GCS")
+        gcs.upload(df, output_path)
+        logger.info("Uploaded successfully")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+        return {"message": "Transform complete", "file_path": output_path}
+
+    except Exception as e:
+        return {"error": str(e)}, 500
