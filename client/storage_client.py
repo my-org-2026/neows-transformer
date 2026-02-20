@@ -14,7 +14,6 @@ class GCSClient:
 
         blob.upload_from_string(csv_data, content_type="text/csv")
 
-        print(f"Uploaded")
 
     def download(self, source_blob_name):
         blob = self.bucket.blob(source_blob_name)
