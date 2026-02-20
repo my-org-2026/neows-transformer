@@ -6,7 +6,7 @@ steps:
       - 'gcloud'
       - 'functions'
       - 'deploy'
-      - 'asteroid-transformer'
+      - 'neows-transformer'
       - '--gen2'
       - '--region=europe-west1'
       - '--source=.'
