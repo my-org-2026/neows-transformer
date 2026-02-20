@@ -1,0 +1,17 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'functions'
+      - 'deploy'
+      - 'asteroid-transformer'
+      - '--gen2'
+      - '--region=europe-west1'
+      - '--source=.'
+      - '--runtime=python312'
+      - '--entry-point=main'
+      - '--trigger-http'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=ASTEROIDS_BUCKET=astreoids-bucket,OUTPUT_PATH=processed/data.csv'
